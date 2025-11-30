@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Task Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="sta-header">
+      <h1>Smart Task Analyzer</h1>
+      <p>
+        Score and prioritize your tasks using urgency, importance, effort, and
+        dependencies.
+      </p>
+    </header>
+
+    <main class="sta-main">
+      <section class="sta-section" id="input-section">
+        <h2>1. Add Tasks</h2>
+        <div class="sta-input-grid">
+          <form id="task-form" class="sta-card">
+            <h3>Add Single Task</h3>
+            <div class="sta-field">
+              <label for="title">Title<span class="required">*</span></label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Fix login bug"
+                required
+              />
+            </div>
+
+            <div class="sta-field">
+              <label for="due_date"
+                >Due Date<span class="required">*</span></label
+              >
+              <input type="date" id="due_date" name="due_date" required />
+            </div>
+
+            <div class="sta-field">
+              <label for="estimated_hours"
+                >Estimated Hours<span class="required">*</span></label
+              >
+              <input
+                type="number"
+                id="estimated_hours"
+                name="estimated_hours"
+                step="0.25"
+                min="0"
+                placeholder="3"
+                required
+              />
+            </div>
+
+            <div class="sta-field">
+              <label for="importance"
+                >Importance (1–10)<span class="required">*</span></label
+              >
+              <input
+                type="number"
+                id="importance"
+                name="importance"
+                min="1"
+                max="10"
+                placeholder="8"
+                required
+              />
+            </div>
+
+            <div class="sta-field">
+              <label for="dependencies">
+                Dependencies (Task IDs, comma-separated)
+              </label>
+              <input
+                type="text"
+                id="dependencies"
+                name="dependencies"
+                placeholder="e.g., 1,3"
+              />
+              <small>Use the numeric IDs from the task list below.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Task</button>
+          </form>
+
+          <div class="sta-card">
+            <h3>Bulk Input (JSON)</h3>
+            <p class="sta-help-text">
+              Optional: paste an array of tasks with fields:
+              <code
+                >title, due_date, estimated_hours, importance,
+                dependencies</code
+              >.
+            </p>
+            <textarea
+              id="bulk-json"
+              rows="10"
+              placeholder='[{"title":"Fix login bug","due_date":"2025-11-30","estimated_hours":3,"importance":8,"dependencies":[1]}]'
+            ></textarea>
+            <button id="load-bulk" class="btn btn-secondary">
+              Load JSON Tasks
+            </button>
+          </div>
+        </div>
+
+        <div class="sta-card">
+          <h3>Current Tasks</h3>
+          <p class="sta-help-text">
+            Tasks you add appear here. IDs are assigned automatically and used
+            for dependencies.
+          </p>
+          <div class="table-wrapper">
+            <table id="task-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Due Date</th>
+                  <th>Hours</th>
+                  <th>Importance</th>
+                  <th>Dependencies</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="sta-section" id="controls-section">
+        <h2>2. Choose Strategy & Analyze</h2>
+
+        <div class="sta-card sta-controls">
+          <div class="sta-field">
+            <label for="strategy">Priority Strategy</label>
+            <select id="strategy">
+              <option value="smart_balance">Smart Balance (default)</option>
+              <option value="fastest_wins">
+                Fastest Wins (low effort first)
+              </option>
+              <option value="high_impact">
+                High Impact (importance first)
+              </option>
+              <option value="deadline_driven">
+                Deadline Driven (due date first)
+              </option>
+            </select>
+          </div>
+
+          <div class="sta-buttons">
+            <button id="analyze-btn" class="btn btn-primary">
+              Analyze Tasks
+            </button>
+            <button id="suggest-btn" class="btn btn-outline">
+              Suggest Top 3 for Today
+            </button>
+          </div>
+
+          <div id="status-message" class="sta-status"></div>
+        </div>
+      </section>
+
+      <section class="sta-section" id="output-section">
+        <h2>3. Priority Results</h2>
+
+        <div class="sta-card">
+          <div class="sta-legend">
+            <span class="badge badge-high">High</span>
+            <span class="badge badge-medium">Medium</span>
+            <span class="badge badge-low">Low</span>
+            <span class="legend-label">Priority level (based on score)</span>
+          </div>
+
+          <div class="table-wrapper">
+            <table id="results-table">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Title</th>
+                  <th>Due Date</th>
+                  <th>Hours</th>
+                  <th>Importance</th>
+                  <th>Score</th>
+                  <th>Explanation</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="sta-section" id="graph-section">
+        <h2>4. Dependency Graph</h2>
+
+        <div class="sta-card">
+          <p class="sta-help-text">
+            Visual view of how tasks depend on each other. This will update
+            after you analyze or request suggestions.
+          </p>
+
+          <div id="dep-graph-wrapper" class="dep-graph-wrapper">
+            <div id="dep-graph" class="dep-graph-canvas"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="sta-footer">
+      <p>Smart Task Analyzer • Thulyasri Saravakota</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
