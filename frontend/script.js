@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:8000/api/tasks";
+const API_BASE = "https://smart-task-analyzer-qkzm.onrender.com/";
 
 let tasks = [];
 let nextId = 1;
